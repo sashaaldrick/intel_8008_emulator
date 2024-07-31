@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 use std::ops::{Index, IndexMut};
 
 // you can think of this as the CPU itself
@@ -27,10 +28,12 @@ impl Intel8008 {
         }
     }
 
-    // fn lrm(&mut self, register: Register) { 
-    // }
-
-    fn lrm(&mut self, register: Register) {
+    // Indirect Addressing:
+    // To access the full 14-bit address space using 8-bit registers, 
+    // the 8008 uses H and L together to form a complete address:
+    // The result is a 16-bit address where H forms the high byte 
+    // and L forms the low byte. 
+    fn LrM(&mut self, register: Register) {
         let address = (self.registers[Register::H as usize] as u16) << 8 
                     | self.registers[Register::L as usize] as u16;
         self.registers[register as usize] = self.memory[address as usize];
@@ -52,12 +55,33 @@ impl IndexMut<Register> for Intel8008 {
 }
 
 fn main() {
-    let mut cpu = Intel8008::new();
+    // let mut cpu = Intel8008::new();
 
-    cpu[Register::H] = 0b0001_0010;
-    cpu.registers[6] = 0x12;
-    cpu.memory[0x1234] = 0x42;
+    // cpu[Register::H] = 0b0001_0010;
+    // cpu[Register::L] = 0x12;
+    // cpu.memory[0x1212] = 0x42;
 
-    assert_eq!(cpu.registers[5], cpu.registers[6]);
-    println!("seems we legit bro");
+    // cpu.LrM(Register::A);
+
+    // assert_eq!(cpu[Register::A], 66);
+    // println!("seems we legit bro");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn LrM_works() {
+        let mut cpu = Intel8008::new();
+        
+        cpu[Register::H] = 0x12;
+        cpu[Register::L] = 0x12;
+        cpu.memory[0x1212] = 0x42;
+
+        // load memory from address made up of combined H, L register to A register.
+        cpu.LrM(Register::A);
+        assert_eq!(cpu[Register::A], cpu.memory[0x1212]);
+
+    }
 }
