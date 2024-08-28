@@ -4,3 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+
+
+[lib]
+name = "intel_8008_emulator"
+path = "src/main.rs"
